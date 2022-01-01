@@ -9,6 +9,7 @@ struct Cell {
     x: i32,
     y: i32,
     on: bool,
+    next_state: bool,
 }
 
 struct AdjacentCells {
@@ -37,6 +38,7 @@ fn create_cell(x: i32, y: i32) -> Cell {
         x: x * CELL_SIZE,
         y: y * CELL_SIZE,
         on,
+        next_state: on,
     }
 }
 
@@ -153,12 +155,16 @@ fn step_grid(grid: &mut Vec<Cell>) {
         let adjacent = get_adjacent_cells(grid, i);
         let mut cell = &mut grid[i];
 
+        if cell.on != cell.next_state {
+            cell.on = cell.next_state;
+        }
+
         if adjacent.num_neighbors == 3 {
-            cell.on = true;    
+            cell.next_state = true;    
         } else if adjacent.num_neighbors <= 1 {
-            cell.on = false;
+            cell.next_state = false;
         } else if adjacent.num_neighbors >= 5 {
-            cell.on = false;
+            cell.next_state = false;
         } 
 
         /*
@@ -180,7 +186,7 @@ fn main() {
         i += 1;
         draw_grid(&v);
         step_grid(&mut v);
-        thread::sleep(time::Duration::from_millis(100));
+        thread::sleep(time::Duration::from_millis(50));
         println!("\n\n\n\n\n");
     }
 }
